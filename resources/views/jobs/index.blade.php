@@ -10,6 +10,7 @@
     <li>No jobs found</li>
     @endforelse
   </ul>
+   <x-bottom-banner/>
 </x-layout>
 
 {{-- 
