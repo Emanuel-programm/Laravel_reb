@@ -87,7 +87,7 @@ Route::get('/', function () {
 //     return response('Hello World')->cookie('name', 'John Doe');
 // });
 Route::get('/jobs',[JobController::class,'index']);
-Route::get('/jobs/create',[JobController::class,'create']);  
-Route::get('/jobs/{id}',[JobController::class,'show']);
+Route::post('/jobs/create',[JobController::class,'create']);  
+Route::get('/jobs/{id}',[JobController::class,'show'])->name('jobs.show');
 
 

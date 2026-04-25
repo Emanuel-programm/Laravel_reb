@@ -2,10 +2,13 @@
 {{-- @extends('layout')
 @section('content') --}}
 <x-layout>
-     <x-slot:title> Job List </x-slot>
+     <x-slot:title> Job Listings </x-slot>
   <ul>
     @forelse($jobs as $job)
-    <li>{{ $job }}</li>
+   <a href="{{ route('jobs.show', $job->id) }}">
+  
+  <li>  {{ $job->title }} </li>
+</a>
     @empty
     <li>No jobs found</li>
     @endforelse

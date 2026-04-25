@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Job;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class JobController extends Controller
 {
@@ -12,10 +14,14 @@ class JobController extends Controller
      */
     public function index():View
     {
-        $title="Available jobs";
-        $jobs=['Software Developer','Ml Engineer','Data Scientist'];
+        // $title="Available jobs";
+        // $jobs=['Software Developer','Ml Engineer','Data Scientist'];
 
-        return view('jobs.index',compact('title','jobs'));
+        $jobs=Job::all();
+        return view('jobs.index',compact('jobs'));
+
+
+        // return view('jobs.index',compact('title','jobs'));
     }
 
 
@@ -23,9 +29,18 @@ class JobController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create():View
+    public function create(Request $request):RedirectResponse
     {
-        return view("jobs.create");
+
+    $validatedData=$request->vailidate([
+        'title'=>'required|string|max:255',
+        'description'=>'required|string',  
+    ]);
+       
+
+        Job::create($validatedData);
+
+        return redirect()->route('jobs.index');
     }
 
     /**
@@ -40,9 +55,9 @@ class JobController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Job $job):View
     {
-        //
+        return view('jobs.show',compact('job'));
     }
 
     /**
