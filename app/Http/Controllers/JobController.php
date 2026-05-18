@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Job;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -29,26 +30,52 @@ class JobController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request):RedirectResponse
+    public function create(Request $request):View
     {
-
-    $validatedData=$request->vailidate([
-        'title'=>'required|string|max:255',
-        'description'=>'required|string',  
-    ]);
-       
-
-        Job::create($validatedData);
-
-        return redirect()->route('jobs.index');
+   return view('jobs.create');
+   
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): string
+    public function store(Request $request): RedirectResponse
     {
-        return "Title: " . $request->input('title');
+
+    // dd($request->file('company_logo'));
+        // Validate the incoming request data
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'salary' => 'required|integer',
+            'tags' => 'nullable|string',
+            'job_type' => 'required|string',
+            'remote' => 'required|boolean',
+            'requirements' => 'nullable|string',
+            'benefits' => 'nullable|string',
+            'address' => 'nullable|string',
+            'city' => 'required|string',
+            'state' => 'required|string',
+            'zipcode' => 'required|string',
+            'contact_email' => 'required|email',
+            'contact_phone' => 'nullable|string',
+            'company_name' => 'required|string',
+            'company_description' => 'nullable|string',
+            'company_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'company_website' => 'nullable|url',  
+    ]);
+# File upload logic
+if($request->hasFile('company_logo')){
+    $path=$request->file('company_logo')->store("logos","public");
+    $validatedData['company_logo']=$path;
+}
+
+$validatedData['user_id']=1;
+       
+
+        Job::create($validatedData);
+
+        return redirect()->route('jobs.index')->with("success","Job created successfully!!");
     }
 
 
@@ -63,24 +90,75 @@ class JobController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Job $job):View
     {
-        //
+        // $job=Job::find($id);
+        return view('jobs.edit', compact('job'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Job $job)
     {
-        //
+        // Validate the incoming request data
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'salary' => 'required|integer',
+            'tags' => 'nullable|string',
+            'job_type' => 'required|string',
+            'remote' => 'required|boolean',
+            'requirements' => 'nullable|string',
+            'benefits' => 'nullable|string',
+            'address' => 'nullable|string',
+            'city' => 'required|string',
+            'state' => 'required|string',
+            'zipcode' => 'required|string',
+            'contact_email' => 'required|email',
+            'contact_phone' => 'nullable|string',
+            'company_name' => 'required|string|max:255',
+            'company_description' => 'nullable|string',
+            'company_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'company_website' => 'nullable|url',
+        ]);
+
+
+ if($request->hasFile('company_logo')) {
+    # delete if exist
+    if($job->company_logo){
+        Storage::delete('public/logos'. basename($job->company_logo));
+    }
+    #store the file and get the path
+    $path=$request->file('company_logo')->store("logos","public");
+
+            // Add the path to the validated data array
+            $validatedData['company_logo'] = $path;
+
+
+ }
+
+
+        // Update with the validated data
+        $job->update($validatedData);
+
+
+        return redirect()->route('jobs.index')->with('success', 'Job listing updated successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Job $job)
     {
-        //
+        // If there is a company logo, delete it from storage
+        if ($job->company_logo) {
+            Storage::delete('public/logos/' . $job->company_logo);
+        }
+
+        // Delete the job
+        $job->delete();
+
+        return redirect()->route('jobs.index')->with('success', 'Job listing deleted successfully!');
     }
 }
