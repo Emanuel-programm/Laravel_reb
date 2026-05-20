@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Job;
+use App\Models\User;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -13,6 +16,9 @@ class JobController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    use AuthorizesRequests;
+
     public function index():View
     {
         // $title="Available jobs";
@@ -30,8 +36,12 @@ class JobController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request):View
+    public function create(Request $request):View | RedirectResponse
     {
+
+        // if (!Auth::check()) {  we can use middleware for this
+        //     return redirect()->route('login');
+        // }
    return view('jobs.create');
    
     }
@@ -42,6 +52,11 @@ class JobController extends Controller
     public function store(Request $request): RedirectResponse
     {
 
+        // if (!Auth::check()) {
+        //     return redirect()->route('login');
+        // }
+
+       
     // dd($request->file('company_logo'));
         // Validate the incoming request data
         $validatedData = $request->validate([
@@ -70,7 +85,8 @@ if($request->hasFile('company_logo')){
     $validatedData['company_logo']=$path;
 }
 
-$validatedData['user_id']=1;
+$validatedData['user_id']=auth()->user()->id;
+
        
 
         Job::create($validatedData);
@@ -92,6 +108,7 @@ $validatedData['user_id']=1;
      */
     public function edit(Job $job):View
     {
+        $this->authorize('update', $job);
         // $job=Job::find($id);
         return view('jobs.edit', compact('job'));
     }
@@ -100,7 +117,14 @@ $validatedData['user_id']=1;
      * Update the specified resource in storage.
      */
     public function update(Request $request, Job $job)
+
+
     {
+
+        // Check if the user is authorized
+        $this->authorize('update', $job);
+
+
         // Validate the incoming request data
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
@@ -151,6 +175,7 @@ $validatedData['user_id']=1;
      */
     public function destroy(Job $job)
     {
+        $this->authorize('update', $job);
         // If there is a company logo, delete it from storage
         if ($job->company_logo) {
             Storage::delete('public/logos/' . $job->company_logo);
