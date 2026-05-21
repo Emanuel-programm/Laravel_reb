@@ -11,7 +11,7 @@
   </head>
   <body class="bg-gray-100">
   <x-header/>
-  @if (request()->is('/'))
+ @if (request()->is('/'))
      <x-hero/>
      <x-top-banner/>
      <x-bottom-banner/>

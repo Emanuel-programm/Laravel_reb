@@ -24,7 +24,7 @@ class JobController extends Controller
         // $title="Available jobs";
         // $jobs=['Software Developer','Ml Engineer','Data Scientist'];
 
-        $jobs=Job::all();
+        $jobs=Job::paginate(10);
         return view('jobs.index',compact('jobs'));
 
 
@@ -184,6 +184,10 @@ $validatedData['user_id']=auth()->user()->id;
         // Delete the job
         $job->delete();
 
+
+        if (request()->query('from') === 'dashboard') {
+            return redirect()->route('dashboard.index')->with('success', 'Job listing deleted successfully!');
+        }
         return redirect()->route('jobs.index')->with('success', 'Job listing deleted successfully!');
     }
 }
