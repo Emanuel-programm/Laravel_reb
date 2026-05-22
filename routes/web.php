@@ -2,6 +2,7 @@
 
 // use Illuminate\Http\Request as HttpRequest;
 
+use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\HomeController;
@@ -110,7 +111,14 @@ Route::middleware('auth')->group(function(){
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-Route::get('/jobs/{job}', [JobController::class, 'show'])->name('jobs.show');
+Route::middleware('auth')->group(function () {
+    Route::get('/bookmarks', [BookmarkController::class, 'index'])->name('bookmarks.index');
+    Route::post('/bookmarks/{job}', [BookmarkController::class, 'store'])->name('bookmarks.store');
+    Route::delete('/bookmarks/{job}', [BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
+});
+
+
+Route::get('/jobs/{job}', [JobController::class, 'show'])->name('jobs.show')->whereNumber('job');
 
 
 Route::middleware('guest')->group(function(){

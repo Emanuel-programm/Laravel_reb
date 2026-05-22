@@ -9,7 +9,7 @@
         >All Jobs</x-nav-link
       >
       @auth
-      <x-nav-link url="/jobs/saved" :active="request()->is('jobs/saved')"
+      <x-nav-link url="{{route('bookmarks.index')}}" :active="request()->routeIs('bookmarks.index')"
         >Saved Jobs</x-nav-link
       >
 
@@ -70,7 +70,7 @@
       >All Jobs</x-nav-link
     >
     @auth
-    <x-nav-link url="/jobs/saved" :active="request()->is('jobs/saved')"
+    <x-nav-link url="{{ route('bookmarks.index') }}" :active="request()->routeIs('bookmarks.index')"
       >Saved Jobs</x-nav-link
     >
     <x-nav-link
