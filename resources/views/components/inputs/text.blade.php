@@ -1,6 +1,6 @@
 @props([
 'id', 'name', 'label' => null, 'type' => 'text', 'value' => '',
-'placeholder' => ''
+'placeholder' => '','required'=>false
 ])
 
 
@@ -11,11 +11,12 @@
   @endif
   <input
     id="{{ $id }}"
+    {{$required ? 'required' : '' }}
     type="{{ $type }}"
     name="{{ $name }}"
     value="{{ old($name, $value) }}"
     class="w-full px-4 py-2 border rounded focus:outline-none @error($name) border-red-500 @enderror"
-    placeholder="{{ $placeholder }}"
+    placeholder="{{ $placeholder }} "
   />
   @error($name)
   <p class="text-red-500 text-sm mt-1">{{ $message }}</p>

@@ -2,6 +2,7 @@
 
 // use Illuminate\Http\Request as HttpRequest;
 
+use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JobController;
@@ -109,6 +110,10 @@ Route::middleware('auth')->group(function(){
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Applicants routes
+    Route::post('/jobs/{job}/apply', [ApplicantController::class, 'store'])->name('applicants.store');
+    Route::delete('/applicants/{applicant}', [ApplicantController::class, 'destroy'])->name('applicants.destroy');
 });
 
 Route::middleware('auth')->group(function () {

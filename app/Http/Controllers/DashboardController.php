@@ -11,14 +11,13 @@ class DashboardController extends Controller
     public function index(Request $request){
 
 
-    // Get authenticated user
-    $user=Auth::user();
+        // Get the authenticated user
+        $user = Auth::user();
 
+        // Get all job listings for the authenticated user
+        $jobs = Job::where('user_id', $user->id)->with('applicants')->get();
 
-        // Get all jobs for the authenticated user
-        $jobs = Job::where('user_id', $user->id)->get();
-
-        return view('dashboard.index',compact('jobs','user'));
-
+        return view('dashboard.index', compact('user', 'jobs'));
     }
-}
+    }
+
